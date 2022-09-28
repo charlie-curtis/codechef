@@ -1,17 +1,10 @@
-package competitions.start59.RANKLISTPAGE;
+package competitions.start58.REACHTARGET;
 
 /* package codechef; // don't place package name! */
-
 import java.util.*;
 import java.lang.*;
-import java.io.*;
 
 /* Name of the class has to be "Main" only if the class is public. */
-//1 3 2 4 5
-//1 2 3 4 5
-
-//+2 +1 +1 +2
-
 class Codechef
 {
   public static void main (String[] args) throws java.lang.Exception
@@ -21,8 +14,12 @@ class Codechef
 
     int[] answers = new int[testCases];
     for (int i = 0; i < testCases; i++) {
-      double finishedRank = Double.parseDouble(sc.nextLine());
-      answers[i] = (int) Math.ceil(finishedRank / 25);
+      int[] inputs = new int[2];
+      String line = sc.nextLine();
+      String[] nums = line.split(" ");
+      inputs[0] = Integer.parseInt(nums[0]);
+      inputs[1] = Integer.parseInt(nums[1]);
+      answers[i] = inputs[0] - inputs[1];
     }
 
     for (int i = 0; i < answers.length; i++) {
