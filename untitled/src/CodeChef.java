@@ -10,6 +10,32 @@ import java.io.*;
 
 //+2 +1 +1 +2
 
+
+// 8 4 // passes
+// 5 10 fails
+// 12 24 // fails
+
+// 2*2*2 vs 2*2  -> 1,8,4,2 vs 1,2,4
+// 5 vs 2*5 -> 5, 1 vs 1,2,5,10
+// 2*2*3 vs 2*2*2*3 vs 1, 2, 3, 4, 6, 12 vs 1, 2, 3, 4, 6, 8, 12, 24
+
+//2*2*3 vs 2*2*3*3
+
+// 8 vs 24
+
+// a^x = b ^ y
+
+//8 4
+//2^(2*2) 2^(2*1)
+
+//2*2*2 vs 2*2
+
+//8^2 = 4
+
+//
+
+
+
 class Codechef
 {
   public static void main (String[] args) throws java.lang.Exception
@@ -17,42 +43,52 @@ class Codechef
     Scanner sc = new Scanner(System.in);
     int testCases = Integer.parseInt(sc.nextLine());
 
-    int[] answers = new int[testCases];
+    boolean[] answers = new boolean[testCases];
     for (int i = 0; i < testCases; i++) {
-      int arrayLength = Integer.parseInt(sc.nextLine());
-      int[] input = new int[arrayLength];
       String line = sc.nextLine();
       String[] nums = line.split(" ");
-      for (int j = 0; j < arrayLength; j++) {
-        input[j] = Integer.parseInt(nums[j]);
-      }
-      answers[i] = computeParity(input);
+      int[] input = new int[2];
+      input[0] = Integer.parseInt(nums[0]);
+      input[1] = Integer.parseInt(nums[1]);
+      answers[i] = findAnswer(input);
     }
 
     for (int i = 0; i < answers.length; i++) {
-      System.out.println(answers[i]);
+      if (!answers[i]) {
+        System.out.println("NO");
+      } else {
+        System.out.println("YES");
+      }
     }
   }
 
-  private static int computeParity(int[] input)
+  private static boolean findAnswer(int[] input)
   {
-    //even + even = even;
-    //even + odd = odd
-    //odd + odd = even;
+    Set<Integer> s1 = getPrimeFactors(input[0]);
+    Set<Integer> s2 = getPrimeFactors(input[1]);
 
-    //If we have an odd number, we can't ever get rid of it by breaking it down. This is because
-    //an odd number breaks down into odd = odd + even, so we didn't really get rid of anything
-    int countOfEvenNumbers = 0;
+    if (s1.size() != s2.size()) {
+      return false;
+    }
 
-    for (int i = 0; i < input.length; i++) {
-      if (input[i] % 2 == 0) {
-        countOfEvenNumbers ++;
+    s1.retainAll(s2);
+    if (s1.size() == s2.size() && s1.size() == 1) {
+      return true;
+    }
+    return false;
+  }
+
+  private static Set<Integer> getPrimeFactors(int num)
+  {
+    HashSet<Integer> answer = new HashSet<>();
+    int i = 2;
+    while (num != 1) {
+      while (num % i == 0) {
+        answer.add(i);
+        num /= i;
       }
+     i++;
     }
-    if (countOfEvenNumbers == input.length) {
-      //if all numbers are even, we're good
-      return 0;
-    }
-    return countOfEvenNumbers;
+    return answer;
   }
 }
