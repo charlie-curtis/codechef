@@ -32,63 +32,88 @@ import java.io.*;
 
 //8^2 = 4
 
-//
+// 1 1 2 3 3 4
+
+
+// 1 2 3 1 2 1 3 3 4
+
+//input 1 2 3 4 5 6 7
 
 
 
-class Codechef
-{
-  public static void main (String[] args) throws java.lang.Exception
-  {
+class Codechef {
+
+  public static void main(String[] args) throws java.lang.Exception {
     Scanner sc = new Scanner(System.in);
     int testCases = Integer.parseInt(sc.nextLine());
 
-    boolean[] answers = new boolean[testCases];
+    int[] answers = new int[testCases];
     for (int i = 0; i < testCases; i++) {
+      int length = Integer.parseInt(sc.nextLine());
       String line = sc.nextLine();
       String[] nums = line.split(" ");
-      int[] input = new int[2];
-      input[0] = Integer.parseInt(nums[0]);
-      input[1] = Integer.parseInt(nums[1]);
-      answers[i] = findAnswer(input);
+      int[] input = new int[length];
+      for (int j = 0; j < length; j++) {
+        input[j] = Integer.parseInt(nums[j]);
+      }
+      initializeMap(input);
+      answers[i] = getMinCut(input, 0, length-1);
     }
 
     for (int i = 0; i < answers.length; i++) {
-      if (!answers[i]) {
-        System.out.println("NO");
-      } else {
-        System.out.println("YES");
+      System.out.println(answers[i]);
+    }
+  }
+
+  private static HashMap<Integer, HashMap<Integer, Boolean>> map;
+  private static void initializeMap(int[] input) {
+    map = new HashMap<>();
+
+    for(int i = 0; i < input.length; i++) {
+      for (int j = 0; j < input.length; j++) {
+        boolean hasDupe = false;
+        for (int k = i; !hasDupe && k <= j; k++) {
+          for (int l = i; !hasDupe && l <= j; l++) {
+            if (input[l] == input[k] && k != l) {
+              hasDupe = true;
+            }
+          }
+        }
+        HashMap<Integer, Boolean> temp = map.getOrDefault(i, new HashMap<>());
+        temp.put(j, hasDupe);
+        map.put(i, temp);
       }
     }
+
   }
 
-  private static boolean findAnswer(int[] input)
+  //endIndex is exclusive
+  // 1 2 1 3 4 5
+
+  private static HashMap<String, Integer> hashMap = new HashMap<>();
+  private static int getMinCut(int[] input, int startIndex, int endIndex) {
+
+    if (hashMap.containsKey(String.format("%d:%d", startIndex, endIndex))) {
+      return hashMap.get(String.format("%d:%d", startIndex, endIndex));
+    }
+    if (!containsDupe(startIndex, endIndex)) {
+      hashMap.put(String.format("%d:%d", startIndex, endIndex), 0);
+      return 0;
+    }
+
+    int minValue = Integer.MAX_VALUE;
+    for (int i = startIndex; i < endIndex; i++) {
+      int potentialMin = 1 + getMinCut(input, startIndex, i) + getMinCut(input, i+1, endIndex);
+      minValue = Math.min(minValue, potentialMin);
+    }
+
+    hashMap.put(String.format("%d:%d", startIndex, endIndex), minValue);
+    return minValue;
+  }
+
+  private static boolean containsDupe(int startIndex, int endIndex)
   {
-    Set<Integer> s1 = getPrimeFactors(input[0]);
-    Set<Integer> s2 = getPrimeFactors(input[1]);
-
-    if (s1.size() != s2.size()) {
-      return false;
-    }
-
-    s1.retainAll(s2);
-    if (s1.size() == s2.size() && s1.size() == 1) {
-      return true;
-    }
-    return false;
+    return map.get(startIndex).get(endIndex);
   }
 
-  private static Set<Integer> getPrimeFactors(int num)
-  {
-    HashSet<Integer> answer = new HashSet<>();
-    int i = 2;
-    while (num != 1) {
-      while (num % i == 0) {
-        answer.add(i);
-        num /= i;
-      }
-     i++;
-    }
-    return answer;
-  }
 }
